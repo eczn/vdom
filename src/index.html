@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>VDOM Test</title>
+</head>
+<style>
+    .br {
+        background-color: #F2F2F2; 
+        height: .5em; 
+        margin: 2em 0; 
+    }
+</style>
+<body>
+    ddasd123123
+
+    <div id="app-1" class="喵啦">
+        <i>app-1 喵啦</i>
+        <h1>VDOM Test</h1>
+        <p>hello, world</p>
+
+        <div class="inner">
+            <h1>Inner</h1>
+            <p>内部测试</p>
+
+            <div class="inner-inner">
+                <h1>inner's inner</h1>
+                <p>内部的内部</p>
+            </div>
+        </div>
+
+        <div class="inner2">
+            <h1>Inner2</h1>
+            <p>你猜</p>
+        </div>
+    </div>
+
+    <div class="br"></div>
+
+    <div id="target"></div>
+
+    <script src="./app.js"></script>
+</body>
+</html>
