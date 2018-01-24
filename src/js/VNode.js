@@ -13,9 +13,8 @@ function VNode(tag = 'div', props = {}, children = []){
     this.children = children; 
 }
 
-// 别名
 /**
- * @description VNode Alias
+ * @description VNode Alias 别名
  * @param {$1} tag
  * @param {$2} props
  * @param {$3} children 
