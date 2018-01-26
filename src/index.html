@@ -14,24 +14,48 @@
     }
 </style>
 <body>
-    <div id="app-1" class="喵啦">
-        <i>app-1 喵啦</i>
-        <h1>VDOM Test</h1>
-        <p>hello, world</p>
+    <div vid="1" id="app-1" class="喵啦">
+        <i vid="2">app-1 喵啦</i>
+        <h1 vid="3">VDOM Test</h1>
+        <p vid="4">hello, world</p>
 
-        <div class="inner">
-            <h1>Inner</h1>
-            <p>内部测试</p>
+        <div vid="5" class="inner">
+            <h1 vid="6">Inner</h1>
+            <p vid="7">内部测试</p>
 
-            <div class="inner-inner">
-                <h1>inner's inner</h1>
-                <p>内部的内部</p>
+            <div vid="8" class="inner-inner">
+                <h1 vid="9">inner's inner</h1>
+                <p vid="10">内部的内部</p>
             </div>
         </div>
 
-        <div class="inner2">
-            <h1>Inner2</h1>
-            <p>你猜</p>
+        <div vid="11" class="inner2">
+            <h1 vid="12">Inner2</h1>
+            <p vid="13">你猜</p>
+        </div>
+    </div>
+
+    <div class="br"></div>
+
+    <div vid="1" id="app-2" class="喵啦">
+        <!-- <h1 vid="3">VDOM Test</h1> -->
+        <p vid="4">hello, world</p>
+        
+        <i vid="2">app-1 喵啦</i>
+
+        <div vid="5" class="inner">
+            <h1 vid="6">Inner</h1>
+            <p vid="7">内部测试</p>
+
+            <div vid="8" class="inner-inner">
+                <h1 vid="9">inner's inner</h1>
+                <p vid="10">内部的内部</p>
+            </div>
+        </div>
+
+        <div vid="11" class="inner2">
+            <h1 vid="12">Inner2</h1>
+            <p vid="13">你猜</p>
         </div>
     </div>
 
