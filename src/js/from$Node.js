@@ -20,10 +20,10 @@ function from$Node($node){
     let children = $children.map($child => {
         if ($child.nodeType === 3){
             return $child.nodeValue; 
-        } else {
+        } else if ($child.nodeType === 1) {
             return from$Node($child); 
         }
-    }); 
+    }).filter(e => e); 
 
     return h(tag, props, children); 
 }
