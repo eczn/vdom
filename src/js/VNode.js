@@ -1,28 +1,36 @@
 const uuid = require('./getVid')
+    , diff = require('./diff')
 
 /**
  * @description VNode 
- * @param {*} tag 
- * @param {*} props 
- * @param {*} children 
+ * @param { String }        tag 
+ * @param { Object }        props 
+ * @param { Array<VNode> }  children 
  */
 function VNode(tag = 'div', props = {}, children = []){
     this.tag = tag; 
     this.props = props; 
-    this.vid = uuid(); 
+
+    if (props.vid){
+        this.vid = props.vid;
+    } else {
+        this.vid = uuid(); 
+    }
+    
     this.children = children; 
-}
+} 
 
 /**
  * @description VNode Alias 别名
- * @param {$1} tag
- * @param {$2} props
- * @param {$3} children 
+ * @param { String }        $1 tag 
+ * @param { Object }        $2 props 
+ * @param { Array<VNode> }  $3 children 
  */
 VNode.h = ($1, $2, $3) => new VNode($1, $2, $3); 
 
 /**
  * @description 渲染为 DOM 树 
+ * @return { Node } dom 树 
  */
 VNode.prototype.render = function(){
     let { tag, props, vid, children, text } = this; 
@@ -52,6 +60,16 @@ VNode.prototype.render = function(){
     }
 
     return $node; 
+}
+
+/**
+ * @description diff this and t2 
+ * @param {VNode} t2 
+ */
+VNode.prototype.diff = function(t2){
+    let t1 = this; 
+
+    return diff(t1, t2); 
 }
 
 /**
