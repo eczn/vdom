@@ -10,7 +10,7 @@ const uuid = require('./getVid')
 function VNode(tag = 'div', props = {}, children = []){
     this.tag = tag; 
     this.props = props; 
-
+    // this.nodeType = 1; 
     if (props.vid){
         this.vid = props.vid;
     } else {
@@ -27,6 +27,24 @@ function VNode(tag = 'div', props = {}, children = []){
  * @param { Array<VNode> }  $3 children 
  */
 VNode.h = ($1, $2, $3) => new VNode($1, $2, $3); 
+
+
+/**
+ * @description 文本节点 
+ * @param { String } str 
+ */
+function Text(str){
+    // this.nodeType = 3; 
+    this.vid = str;  
+    this.text = str; 
+}
+
+Text.prototype.render = function(){
+    let { str } = this; 
+    return document.createTextNode(str); 
+}
+
+VNode.Text = Text; 
 
 /**
  * @description 渲染为 DOM 树 
