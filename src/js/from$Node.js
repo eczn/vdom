@@ -34,4 +34,17 @@ function from$Node($node){
     }
 }
 
+/**
+ * @description 正式调用 from$Node 前的预操作 
+ * @param   { Node  } $node dom 节点 
+ * @returns { VNode } 虚拟 dom
+ */
+function _from$Node($node){
+    let vn = from$Node($node); 
+    // 记住根 
+    vn.$ = $node; 
+
+    return vn; 
+}
+
 module.exports = from$Node; 
