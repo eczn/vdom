@@ -36,7 +36,7 @@ VNode.h = ($1, $2, $3) => new VNode($1, $2, $3);
  */
 function Text(str){
     // this.nodeType = 3; 
-    this.vid = str;  
+    this.vid = uuid();  
     this.text = str; 
 }
 

@@ -1,5 +1,5 @@
 function vid(){
-    let id = vid.id || 0; 
+    let id = vid.id || 1000; 
 
     vid.id = id + 1; 
 
