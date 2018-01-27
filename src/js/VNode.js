@@ -1,5 +1,6 @@
 const uuid = require('./getVid')
     , diff = require('./diff')
+    , { REMOVE, INSERT } = diff.TYPES
 
 /**
  * @description VNode 
@@ -40,8 +41,18 @@ function Text(str){
 }
 
 Text.prototype.render = function(){
-    let { str } = this; 
-    return document.createTextNode(str); 
+    let { text } = this; 
+
+    let $node = document.createTextNode(text); 
+
+    this.$ = $node; 
+
+    return $node; 
+}
+
+Text.prototype.$$ = function(){
+    if (this.$) return this.$; 
+    else return this.render(); 
 }
 
 VNode.Text = Text; 
@@ -52,8 +63,11 @@ VNode.Text = Text;
  */
 VNode.prototype.render = function(){
     let { tag, props, vid, children, text } = this; 
-    
+  
     let $node = document.createElement(tag); 
+
+    // Selector Bind  
+    this.$ = $node; 
 
     Object.keys(props).forEach(key => {
         let val = props[key]; 
@@ -64,20 +78,56 @@ VNode.prototype.render = function(){
     $node.setAttribute('vid', vid); 
     
     children.forEach(child => {
-        if (typeof child === 'string'){
-            let $text_node = document.createTextNode(child); 
-            $node.appendChild($text_node);
-        } else {
-            $node.appendChild(child.render());
-        }
+        let $child = child.render(); 
+        $node.appendChild($child);
     }); 
 
-    if (children.length === 0 && text) {
-        let $text_node = document.createTextNode(text); 
-        $node.appendChild($text_node); 
-    }
-
     return $node; 
+}
+
+/**
+ * @description patch 2 dom 
+ * @param { * } diffRes diff 结果
+ */
+VNode.prototype.$patch = function(diffRes){
+    let { moves, props } = diffRes; 
+    let $ = this.$$(); 
+
+    // 属性 Diff 
+    Object.keys(props).forEach(key => {
+        let newVal = props[key]; 
+
+        $.setAttribute(key, newVal); 
+    }); 
+
+    // 子代 Diff
+    let children  = this.children; 
+    let $children = $.childNodes; 
+    moves.forEach(move => {
+        let $ref = $children[move.index]; 
+        if (move.type === REMOVE) {
+            $.removeChild($ref);
+        } else {
+            $.insertBefore(move.item.$$(), $ref); 
+        }
+    }); 
+}
+
+/**
+ * @description patch 2 tree 
+ * @param { * } diffRes diff 结果
+ */
+VNode.prototype.patch = function(diffRes){
+    return diff.patch(this, diffRes); 
+}
+
+/**
+ * @description 渲染为 DOM 节点 
+ * @returns { Node } dom 节点
+ */
+VNode.prototype.$$ = function(){
+    if (this.$) return this.$; 
+    else return this.render(); 
 }
 
 /**
@@ -95,7 +145,7 @@ VNode.prototype.diff = function(t2){
  */
 VNode.prototype.$mount = function($el){
     let tree = this.render(); 
-    $el.appendChild(tree); 
+    $el.replaceWith(tree); 
 }
 
 
