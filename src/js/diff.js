@@ -2,6 +2,9 @@
 const VNode = require('./VNode')
     , list_diff = require('list-diff2')
 
+
+window.list_diff = list_diff
+
 const REMOVE = 0
     , INSERT = 1
     , TYPES = { REMOVE, INSERT }
