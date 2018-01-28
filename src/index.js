@@ -1,7 +1,6 @@
 const { h } = require('./js/VNode')
     , from$Node = require('./js/from$Node')
     , diff = require('./js/diff')
-    , patch = require('./js/patch')
 
 
 const $app = document.getElementById('app-1'); 
@@ -27,7 +26,7 @@ t1.$mount($target);
 
 console.time('VDOM'); 
 t1.$patch(diffRes); 
-t1.patch(diffRes); 
+// t1.patch(diffRes); 
 console.timeEnd('VDOM'); 
 
 
