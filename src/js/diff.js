@@ -4,7 +4,7 @@ const VNode = require('./VNode')
     , { INSERT, REORDER, DELETE, Patches } = list_diff 
 
 // window.list_diff = list_diff
-list_diff.debug = true; 
+// list_diff.debug = true; 
 
 /**
  * @description diff t1 and t2 
