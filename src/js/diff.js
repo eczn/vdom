@@ -1,30 +1,23 @@
 // diff.js
 const VNode = require('./VNode')
-    , list_diff = require('list-diff2')
+    , list_diff = require('./list-diff')
+    , { INSERT, REORDER, DELETE, Patches } = list_diff 
 
-
-window.list_diff = list_diff
-
-const REMOVE = 0
-    , INSERT = 1
-    , TYPES = { REMOVE, INSERT }
-
-// Set To Diff
-diff.TYPES = TYPES; 
+// window.list_diff = list_diff
+list_diff.debug = true; 
 
 /**
  * @description diff t1 and t2 
- * @param { VNode } t1 源树 
- * @param { VNode } t2 目标树 
- * @returns { Object } diff 结果 
+ * @param   { VNode  }    t1 源树 
+ * @param   { VNode  }    t2 目标树 
+ * @returns { TreePatch } diff 结果 
  */
 function diff(t1, t2){
     let strTable = {}
 
     if (!t1 || !t2) return null; 
     
-    let diffRes =  list_diff(t1.children, t2.children, 'vid');
-
+    let childrenDiff = list_diff(t1.children, t2.children, 'vid');
 
     let propDiff = {}; 
     Object.keys(t1.props).forEach(t1_prop => {
@@ -35,37 +28,22 @@ function diff(t1, t2){
         }
     }); 
 
-    diffRes.props = propDiff
-
-    return diffRes; 
+    return {
+        childrenDiff, propDiff
+    }; 
 }
 
 /**
  * @description 把 diff 结果应用到 t1 上
- * @param { VNode } t1 
- * @param { * } diffRes 
+ * @param { VNode }   t1 
+ * @param { TreePatch } Patches 
  */
-diff.patch = (t1, diffRes) => {
-    if (!diffRes) return t1; 
+diff.patch = (t1, tree_patch) => {
+    let { childrenDiff, propDiff } = tree_patch; 
 
-    let { moves, props } = diffRes; 
-    let oldList = t1.children; 
+    let { children } = t1; 
 
-    moves.forEach(move => {
-        if (move.type === REMOVE) {
-            oldList.splice(move.index, 1);
-        } else {
-            oldList.splice(move.index, 0, move.item);
-        }
-    }); 
-
-    Object.keys(props).forEach(key => {
-        let newVal = props[key]; 
-
-        t1.props[key] = newVal; 
-    }); 
-
-    return t1; 
+    return childrenDiff.to(children); 
 }
 
 module.exports = diff; 
