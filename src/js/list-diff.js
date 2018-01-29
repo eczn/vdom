@@ -22,6 +22,11 @@ let PP = Object.create(Array.prototype);
 // 连接 
 Patches.prototype = PP; 
 
+/**
+ * @description 把 Patches 应用到 list_a 
+ * @param   { Array }  list_a 
+ * @returns { Array }  list_a 
+ */
 Patches.prototype.to = function(list_a){
     this.forEach(patch => {
         let { type, idx, item } = patch; 
@@ -39,7 +44,7 @@ Patches.prototype.to = function(list_a){
         }
     }); 
 
-    return list_a; 
+    return list_a;
 }
 
 /**
@@ -50,10 +55,11 @@ Patches.prototype.to = function(list_a){
  */
 function _diff(list_a_obj, list_b_obj, key){
     // 复制数组 
-    let list_a, list_b; 
+    let list_a, list_b, list_b_key_map; 
     if (key){
         list_a = list_a_obj.map(e => e[key]); 
         list_b = list_b_obj.map(e => e[key]); 
+        list_b_key_map = val_2_idx(list_b_obj, key)
     } else {
         list_a = list_a_obj; 
         list_b = list_b_obj; 
@@ -62,19 +68,23 @@ function _diff(list_a_obj, list_b_obj, key){
     let list_copy_from_a = list_a.slice(); 
 
     let patches = new Patches(); 
-
+    
     // 确保 diff 的第一个参数 list_a 是副本
-    return diff(list_copy_from_a, list_b, patches); 
+    return diff(list_copy_from_a, list_b, key, list_b_obj, list_b_key_map, patches); 
 }
 
 
 /**
  * @description 反转数组键值对 
  * @param { Array<String | Number> } list 
+ * @param { String | Number } key 
+ * @returns { Array< * > }
  */
-function val_2_idx(list){
+function val_2_idx(list_obj, key){
+    let list = list_obj.map(e => e[key]); 
+
     return list.reduce((acc, cur, idx) => {
-        acc[cur] = idx; 
+        acc[cur] = list_obj[idx]; 
         return acc; 
     }, {}); 
 }
@@ -86,13 +96,10 @@ function val_2_idx(list){
  * @param   { Patches } patches
  * @returns { Patches } patches
  */
-function diff(list_a, list_b, patches){
-    const a_idx = val_2_idx(list_a)
-        , b_idx = val_2_idx(list_b)
-    
+function diff(list_a, list_b, key, list_b_obj, list_b_key_map, patches){   
     const DEBUG = !!_diff.debug;
 
-    let len   = Math.max(list_a.length, list_b.length)
+    let len = Math.max(list_a.length, list_b.length)
     
     // console.log(list_a); 
     DEBUG && (
@@ -123,7 +130,7 @@ function diff(list_a, list_b, patches){
             patches.push({
                 type: INSERT, 
                 idx: idx, 
-                item: b
+                item: key ? list_b_key_map[b[key]] : b
             }); 
             
             // 在 list_a 上插入
@@ -179,7 +186,7 @@ function diff(list_a, list_b, patches){
                     patches.push({
                         type: INSERT, 
                         idx: idx, 
-                        item: b
+                        item: key ? list_b_key_map[list_b_obj[idx][key]] : b
                     }); 
 
                     list_a.splice(idx, 0, b); 
