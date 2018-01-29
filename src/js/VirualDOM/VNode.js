@@ -83,7 +83,9 @@ VNode.prototype.render = function(){
     Object.keys(props).forEach(key => {
         let val = props[key]; 
         
-        $node.setAttribute(key, val); 
+        try {   
+            $node.setAttribute(key, val); 
+        } catch (err) {}
     }); 
 
     $node.setAttribute('vid', vid); 
