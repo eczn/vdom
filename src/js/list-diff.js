@@ -3,9 +3,9 @@ const INSERT  = 'INSERT' || 0
     , REORDER = 'REORDER' || 1
     , DELETE  = 'DELETE' || 2
 
-diff.INSERT  = INSERT ; 
-diff.REORDER = REORDER; 
-diff.DELETE  = DELETE ; 
+_diff.INSERT  = INSERT ; 
+_diff.REORDER = REORDER; 
+_diff.DELETE  = DELETE ; 
 
 // EXPORT
 module.exports = _diff; 
@@ -15,8 +15,17 @@ module.exports = _diff;
  * @param { Array<String | Number> } list_a 
  * @param { Array<String | Number> } list_b 
  */
-function _diff(list_a, list_b){
+function _diff(list_a_obj, list_b_obj, key){
     // 复制数组 
+    let list_a, list_b; 
+    if (key){
+        list_a = list_a_obj.map(e => e[key]); 
+        list_b = list_b_obj.map(e => e[key]); 
+    } else {
+        list_a = list_a_obj; 
+        list_b = list_b_obj; 
+    }
+
     let list_copy_from_a = list_a.slice(); 
 
     // 确保 diff 的第一个参数 list_a 是副本
