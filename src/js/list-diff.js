@@ -133,8 +133,9 @@ function diff(list_a, list_b, key, list_b_obj, list_b_key_map, patches){
             patches.push({
                 type: INSERT, 
                 idx: idx, 
-                item: key ? list_b_key_map[b[key]] : b
+                item: key ? list_b_key_map[b] : b
             }); 
+
             
             // 在 list_a 上插入
             DEBUG && (
