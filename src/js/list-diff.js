@@ -1,7 +1,7 @@
 // CONST VAR 
-const INSERT  = 'INS' || 0
-    , REORDER = 'REO' || 1
-    , DELETE  = 'DEL' || 2
+const INSERT  = 'INSERT' || 0
+    , REORDER = 'REORDER' || 1
+    , DELETE  = 'DELETE' || 2
 
 diff.INSERT  = INSERT ; 
 diff.REORDER = REORDER; 
@@ -44,12 +44,17 @@ function diff(list_a, list_b, patches = []){
     const a_idx = val_2_idx(list_a)
         , b_idx = val_2_idx(list_b)
     
+    
+    const DEBUG = !!diff.debug; 
+
     let len   = Math.max(list_a.length, list_b.length)
     
     // console.log(list_a); 
-    console.log('目标：')
-    console.log(list_b); 
-    console.log('\n'); 
+    DEBUG && (
+        console.log('目标：'),
+        console.log(list_b), 
+        console.log('\n')
+    ); 
 
     let [a_x, ...a_xs] = list_a; 
     let [b_x, ...b_xs] = list_b; 
@@ -58,12 +63,16 @@ function diff(list_a, list_b, patches = []){
         let a = list_a[idx]; 
         let b = list_b[idx]; 
 
-        console.log('当前 idx', idx, '当前 len', len); 
-        console.log(list_a); 
+        DEBUG && (
+            console.log('当前 idx', idx, '当前 len', len),
+            console.log(list_a)
+        ); 
         
 
         if (!a){
-            console.log('a 不存在, 应该插入')
+            DEBUG && (
+                console.log('a 不存在, 应该插入')
+            ); 
             // a 不存在 
             // 说明 list_b 比 list_a 长，应插入 b  
             patches.push({
@@ -73,9 +82,14 @@ function diff(list_a, list_b, patches = []){
             }); 
             
             // 在 list_a 上插入
+            DEBUG && (
+                console.log('b:', b)
+            ); 
             list_a.push(b); 
         } else if (!b){
-            console.log('b 不存在, 应该剔除')
+            DEBUG && (
+                console.log('b 不存在, 应该剔除')
+            ); 
             // b 不存在 
             // 说明 list_b 比 list_a 短，a 多余, 应剔除 
             patches.push({
@@ -86,12 +100,16 @@ function diff(list_a, list_b, patches = []){
             list_a.splice(idx, 1); 
         } else {
             if (b === a){
-                console.log('a 刚好根 b 一样'); 
+                DEBUG && (
+                    console.log('a 刚好根 b 一样')
+                ); 
                 // 命中，跳过 
                 // do nothing 
 
             } else { // b !== a
-                console.log('a 跟 b 不一样')
+                DEBUG && (
+                    console.log('a 跟 b 不一样')
+                ); 
                 // 这个位置上应该是 b, 但是目前是 a 
                 // 所以首先应该找找看看 list_a 里有没有 b, 有的话就根这里交换位置
                 // 否则插入到这里 
@@ -99,7 +117,9 @@ function diff(list_a, list_b, patches = []){
                 let exIdx = exIdx_relative + idx; 
 
                 if (~exIdx_relative){ // list_a 之后存在 b, 则交换位置 
-                    console.log('在', exIdx, '处找到了跟 b 一样的，交换跟当前的一下', b); 
+                    DEBUG && (
+                        console.log('在', exIdx, '处找到了跟 b 一样的，交换跟当前的一下', b)
+                    ); 
                     patches.push({
                         type: REORDER, 
                         idx: idx, 
@@ -108,7 +128,9 @@ function diff(list_a, list_b, patches = []){
                     list_a[idx]   = list_a[exIdx]; 
                     list_a[exIdx] = a; 
                 } else {     // 找不到插入  
-                    console.log('找不到，应该插入'); 
+                    DEBUG && (
+                        console.log('找不到，应该插入')
+                    ); 
                     patches.push({
                         type: INSERT, 
                         idx: idx, 
@@ -121,34 +143,34 @@ function diff(list_a, list_b, patches = []){
         }
 
         // 更新一下 
-        // len = Math.max(list_a.length, list_b.length); 
-        console.log('\n'); 
+        len = Math.max(list_a.length, list_b.length); 
+        DEBUG && (
+            console.log('\n')
+        ); 
     }
 
     let remain = list_a.slice(list_b.length); 
-    let list_a_length = list_a.length; 
+    let delta = list_a.length - list_b.length; 
 
-    // remain.forEach((a, idx) => {
-    //     let abs_idx = 
-    //     let toDelete = list_a.pop();
-    // })
+    DEBUG && (
+        console.log(remain),
+        console.log(list_a),
+        console.log(list_b)
+    ); 
 
-    let toDeletes = remain.map((e, idx) => idx + list_a_length - 1); 
+    if (delta >= 1){
+        for (let i = delta; i > 0; i--){
+            patches.push({
+                type: DELETE, 
+                idx: list_b.length
+            }); 
+            list_a.pop();
+        }
+    }
 
-    toDeletes.forEach(idx => {
-        console.log(list_a)
-        console.log('b 不存在, 应该剔除', idx)
-        console.log('\n'); 
-
-        patches.push({
-            type: DELETE, 
-            idx: idx
-        }); 
-        list_a.splice(idx, 1);         
-        
-    })
-
-    console.log(list_a)
+    DEBUG && (
+        console.log(patches)
+    ); 
 
     return patches; 
 }
