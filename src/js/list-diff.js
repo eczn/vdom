@@ -11,6 +11,20 @@ _diff.DELETE  = DELETE ;
 module.exports = _diff; 
 
 /**
+ * @description KeyMap 
+ * @param { Array } arr 
+ * @param { String | Number } key 
+ */
+function keyMap(arr, key){
+    let len = arr.length; 
+    let res = [];
+    for (let i = 0; i < len; i++){
+        res[i] = arr[i][key]; 
+    }
+    return res; 
+}
+
+/**
  * @description Patches 
  */
 function Patches(){
@@ -57,8 +71,10 @@ function _diff(list_a_obj, list_b_obj, key){
     // 复制数组 
     let list_a, list_b, list_b_key_map; 
     if (key){
-        list_a = list_a_obj.map(e => e[key]); 
-        list_b = list_b_obj.map(e => e[key]); 
+        // list_a = list_a_obj.map(e => e[key]); 
+        list_a = keyMap(list_a_obj, key); 
+        // list_b = list_b_obj.map(e => e[key]); 
+        list_b = keyMap(list_b_obj, key); 
         list_b_key_map = val_2_idx(list_b_obj, key)
     } else {
         list_a = list_a_obj; 
@@ -81,8 +97,8 @@ function _diff(list_a_obj, list_b_obj, key){
  * @returns { Array< * > }
  */
 function val_2_idx(list_obj, key){
-    let list = list_obj.map(e => e[key]); 
-
+    let list = keyMap(list_obj, key); 
+    
     return list.reduce((acc, cur, idx) => {
         acc[cur] = list_obj[idx]; 
         return acc; 
@@ -111,9 +127,6 @@ function diff(list_a, list_b, key, list_b_obj, list_b_key_map, patches){
         console.log('\n')
     ); 
 
-    let [a_x, ...a_xs] = list_a; 
-    let [b_x, ...b_xs] = list_b; 
-
     for (let idx = 0; idx < len; idx ++){
         let a = list_a[idx]; 
         let b = list_b[idx]; 
@@ -123,7 +136,6 @@ function diff(list_a, list_b, key, list_b_obj, list_b_key_map, patches){
             console.log(list_a)
         ); 
         
-
         if (!a){
             DEBUG && (
                 console.log('a 不存在, 应该插入')
@@ -136,7 +148,6 @@ function diff(list_a, list_b, key, list_b_obj, list_b_key_map, patches){
                 item: key ? list_b_key_map[b] : b
             }); 
 
-            
             // 在 list_a 上插入
             DEBUG && (
                 console.log('b:', b)
@@ -170,9 +181,10 @@ function diff(list_a, list_b, key, list_b_obj, list_b_key_map, patches){
                 // 所以首先应该找找看看 list_a 里有没有 b, 有的话就根这里交换位置
                 // 否则插入到这里 
                 let exIdx_relative = list_a.slice(idx).findIndex(e => e === b); 
-                let exIdx = exIdx_relative + idx; 
-
+                
                 if (~exIdx_relative){ // list_a 之后存在 b, 则交换位置 
+                    let exIdx = exIdx_relative + idx; 
+
                     DEBUG && (
                         console.log('在', exIdx, '处找到了跟 b 一样的，交换跟当前的一下', b)
                     ); 
@@ -200,21 +212,22 @@ function diff(list_a, list_b, key, list_b_obj, list_b_key_map, patches){
 
         // 更新一下 
         len = Math.max(list_a.length, list_b.length); 
+
         DEBUG && (
             console.log('\n')
         ); 
     }
 
-    let remain = list_a.slice(list_b.length); 
+    // let remain = list_a.slice(list_b.length); 
     let delta = list_a.length - list_b.length; 
 
     DEBUG && (
-        console.log(remain),
+        // console.log(remain),
         console.log(list_a),
         console.log(list_b)
     ); 
 
-    if (delta >= 1){
+    if (delta > 0){
         for (let i = delta; i > 0; i--){
             patches.push({
                 type: DELETE, 
@@ -228,6 +241,7 @@ function diff(list_a, list_b, key, list_b_obj, list_b_key_map, patches){
         console.log(patches),
         console.timeEnd('DIFF')
     ); 
+
     return patches; 
 }
 
