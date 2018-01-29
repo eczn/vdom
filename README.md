@@ -1,7 +1,7 @@
 # VDOM 
 
 1. 实现虚拟 DOM
-2. 利用这个虚拟 DOM 实现一个简单的前端框架 Mois (这次仿 React)
+2. 利用这个虚拟 DOM 实现一个简单的前端框架 Mois (这次仿 React Or Vue)
 
 # Build 
 
