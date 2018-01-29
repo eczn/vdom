@@ -44,8 +44,7 @@ function diff(list_a, list_b, patches = []){
     const a_idx = val_2_idx(list_a)
         , b_idx = val_2_idx(list_b)
     
-    
-    const DEBUG = !!diff.debug; 
+    const DEBUG = !!_diff.debug;
 
     let len   = Math.max(list_a.length, list_b.length)
     
