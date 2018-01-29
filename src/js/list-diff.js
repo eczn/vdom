@@ -1,7 +1,7 @@
 // CONST VAR 
-const INSERT  = 'INSERT' || 0
+const INSERT  = 'INSERT'  || 0
     , REORDER = 'REORDER' || 1
-    , DELETE  = 'DELETE' || 2
+    , DELETE  = 'DELETE'  || 2
 
 _diff.INSERT  = INSERT ; 
 _diff.REORDER = REORDER; 
@@ -11,9 +11,42 @@ _diff.DELETE  = DELETE ;
 module.exports = _diff; 
 
 /**
+ * @description Patches 
+ */
+function Patches(){
+    this.length = 0; 
+}
+
+// 继承自 Array 
+let PP = Object.create(Array.prototype); 
+// 连接 
+Patches.prototype = PP; 
+
+Patches.prototype.to = function(list_a){
+    this.forEach(patch => {
+        let { type, idx, item } = patch; 
+    
+        if (type === DELETE){
+            list_a.splice(idx, 1); 
+        } else if (type === INSERT){
+            list_a.splice(idx, 0, item); 
+        } else if (type === REORDER){
+            let exIdx = item; 
+            let a = list_a[idx]; 
+            
+            list_a[idx]   = list_a[exIdx]; 
+            list_a[exIdx] = a; 
+        }
+    }); 
+
+    return list_a; 
+}
+
+/**
  * @description 数组 diff 跳板
  * @param { Array<String | Number> } list_a 
  * @param { Array<String | Number> } list_b 
+ * @returns { Patches } 返回 patch
  */
 function _diff(list_a_obj, list_b_obj, key){
     // 复制数组 
@@ -28,8 +61,10 @@ function _diff(list_a_obj, list_b_obj, key){
 
     let list_copy_from_a = list_a.slice(); 
 
+    let patches = new Patches(); 
+
     // 确保 diff 的第一个参数 list_a 是副本
-    return diff(list_copy_from_a, list_b); 
+    return diff(list_copy_from_a, list_b, patches); 
 }
 
 
@@ -46,10 +81,12 @@ function val_2_idx(list){
 
 /**
  * @description 数组 diff 
- * @param { Array<String | Number> } list_a 
- * @param { Array<String | Number> } list_b 
+ * @param   { Array<String | Number> }  list_a 
+ * @param   { Array<String | Number> }  list_b 
+ * @param   { Patches } patches
+ * @returns { Patches } patches
  */
-function diff(list_a, list_b, patches = []){
+function diff(list_a, list_b, patches){
     const a_idx = val_2_idx(list_a)
         , b_idx = val_2_idx(list_b)
     
