@@ -3,8 +3,8 @@ const VNode = require('./VNode')
     , list_diff = require('./list-diff')
     , { INSERT, REORDER, DELETE, Patches } = list_diff 
 
-// window.list_diff = list_diff
-// list_diff.debug = true; 
+// Export 
+module.exports = diff; 
 
 /**
  * @description diff t1 and t2 
@@ -45,5 +45,3 @@ diff.patch = (t1, tree_patch) => {
 
     return childrenDiff.to(children); 
 }
-
-module.exports = diff; 
