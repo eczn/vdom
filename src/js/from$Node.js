@@ -10,7 +10,8 @@ let { h } = VNode;
 function from$Node($node){
     let { nodeType } = $node; 
     if (nodeType === 3){
-        return new VNode.Text($node.nodeValue); 
+        if (!$node.nodeValue.trim()) return null; 
+        else return new VNode.Text($node.nodeValue); 
     } else if (nodeType === 1) {
         let tag = $node.tagName.toLowerCase(); 
         
