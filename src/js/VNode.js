@@ -1,6 +1,7 @@
 const uuid = require('./getVid')
     , diff = require('./diff')
-    , { REMOVE, INSERT } = diff.TYPES
+    , list_diff = require('./list-diff')
+    , { INSERT, REORDER, DELETE, Patches } = list_diff 
 
 /**
  * @description VNode 
@@ -11,7 +12,7 @@ const uuid = require('./getVid')
 function VNode(tag = 'div', props = {}, children = []){
     this.tag = tag; 
     this.props = props; 
-    // this.nodeType = 1; 
+    this.nodeType = 1; 
     if (props.vid){
         this.vid = props.vid;
     } else {
@@ -36,8 +37,8 @@ VNode.h = ($1, $2, $3) => new VNode($1, $2, $3);
  * @param { String } str 
  */
 function Text(str){
-    // this.nodeType = 3; 
-    this.vid = uuid();  
+    this.nodeType = 3; 
+    this.vid = str;  
     this.text = str; 
 }
 
@@ -88,6 +89,10 @@ VNode.prototype.render = function(){
     $node.setAttribute('vid', vid); 
     
     children.forEach(child => {
+        if (child.nodeType === 3){
+            if (!child.text.trim()) return null;
+        }
+
         let $child = child.render(); 
         $node.appendChild($child);
     }); 
@@ -97,28 +102,46 @@ VNode.prototype.render = function(){
 
 /**
  * @description patch 2 dom 
- * @param { * } diffRes diff 结果
+ * @param { tree_patch } diffRes diff 结果
  */
-VNode.prototype.$patch = function(diffRes){
-    let { moves, props } = diffRes; 
+VNode.prototype.$patch = function(tree_patch){
+    let { childrenDiff, propDiff } = tree_patch; 
     let $ = this.$$(); 
 
     // 属性 Diff 
-    Object.keys(props).forEach(key => {
-        let newVal = props[key]; 
-
+    Object.keys(propDiff).forEach(key => {
+        let newVal = propDiff[key]; 
         $.setAttribute(key, newVal); 
     }); 
 
     // 子代 Diff
     let children  = this.children; 
     let $children = $.childNodes; 
-    moves.forEach(move => {
-        let $ref = $children[move.index]; 
-        if (move.type === REMOVE) {
+
+    childrenDiff.forEach(patch => {
+        let { idx, item, type } = patch;        
+        let $ref = $children[idx]; 
+
+        // for debug 
+        // console.log('DQ:');
+        // console.log($children); 
+        // console.log(patch)
+
+        // INSERT, REORDER, DELETE
+        if (type === DELETE) {
             $.removeChild($ref);
-        } else {
-            $.insertBefore(move.item.$$(), $ref); 
+        } else if (type === INSERT) {
+            // console.log(item.$$(), $ref); 
+            $.insertBefore(
+                item.$$(),
+                $ref
+            ); 
+        } else { // REORDER
+            let $temp = $children[item];
+            let $next = $temp.nextSibling; 
+            $.insertBefore($temp, $ref); 
+
+            $.insertBefore($ref, $next); 
         }
     }); 
 }
@@ -152,10 +175,12 @@ VNode.prototype.diff = function(t2){
 
 /**
  * @description 挂在某个节点上 
+ * @param { Element } $el 
  */
 VNode.prototype.$mount = function($el){
     let tree = this.render(); 
-    $el.replaceWith(tree); 
+    $el.parentElement.replaceChild(tree, $el);
+    // $el.replaceWith(tree); 
 }
 
 
