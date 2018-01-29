@@ -26,6 +26,7 @@ function VNode(tag = 'div', props = {}, children = []){
  * @param { String }        $1 tag 
  * @param { Object }        $2 props 
  * @param { Array<VNode> }  $3 children 
+ * @returns { VNode }
  */
 VNode.h = ($1, $2, $3) => new VNode($1, $2, $3); 
 
@@ -40,6 +41,10 @@ function Text(str){
     this.text = str; 
 }
 
+/**
+ * @description Text 节点渲染
+ * @returns { Element } 返回文本节点 
+ */
 Text.prototype.render = function(){
     let { text } = this; 
 
@@ -50,11 +55,16 @@ Text.prototype.render = function(){
     return $node; 
 }
 
+/**
+ * @description 返回对应的 DOM 节点 
+ * @returns { Element } 返回节点 
+ */
 Text.prototype.$$ = function(){
     if (this.$) return this.$; 
     else return this.render(); 
 }
 
+// 挂到 VNode 上 
 VNode.Text = Text; 
 
 /**
