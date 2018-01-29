@@ -103,7 +103,10 @@ function diff(list_a, list_b, key, list_b_obj, list_b_key_map, patches){
     
     // console.log(list_a); 
     DEBUG && (
-        console.log('目标：'),
+        console.time('DIFF'), 
+        console.log('当前: '),
+        console.log(list_a), 
+        console.log('目标: '),
         console.log(list_b), 
         console.log('\n')
     ); 
@@ -221,9 +224,9 @@ function diff(list_a, list_b, key, list_b_obj, list_b_key_map, patches){
     }
 
     DEBUG && (
-        console.log(patches)
+        console.log(patches),
+        console.timeEnd('DIFF')
     ); 
-
     return patches; 
 }
 
